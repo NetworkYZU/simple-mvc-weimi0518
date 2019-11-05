@@ -12,6 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h3>未在學生名單內!</h3>
+        請確認您的id
     </body>
 </html>

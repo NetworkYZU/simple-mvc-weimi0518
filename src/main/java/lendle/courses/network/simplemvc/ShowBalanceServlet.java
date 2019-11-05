@@ -6,6 +6,8 @@
 package lendle.courses.network.simplemvc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,10 +16,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author lendle
+ * @author linweimin
  */
-@WebServlet(name = "ShowScore", urlPatterns = {"/score"})
-public class ShowScore extends HttpServlet {
+@WebServlet(name = "ShowBalanceServlet", urlPatterns = {"/ShowBalanceServlet"})
+public class ShowBalanceServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,22 +33,24 @@ public class ShowScore extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String id=request.getParameter("id");
-        Student student=Student.getStudent(id);
-        String address=null;
-        //按照分數選擇頁面
-        if(student==null){
-            address="/WEB-INF/score-report/UnknownStudent.jsp";
-        }else if(student.getScore()<60){
-            address="/WEB-INF/score-report/LowScore.jsp";
-            request.setAttribute("student", student);
-        }else if(student.getScore()>=80){
-            address="/WEB-INF/score-report/HighScore.jsp";
-            request.setAttribute("student", student);
-        }else{
-            address="/WEB-INF/score-report/NormalScore.jsp";
-            request.setAttribute("student", student);
+        BankCustomer customer=BankCustomer.getCustomer(id);
+        if(customer==null){
         }
-        request.getRequestDispatcher(address).forward(request, response);
+        else if(customer.getBalance()<0){
+            //內轉址 網址沒有變，但頁面改變
+            request.setAttribute("customer", customer);
+            RequestDispatcher rd=request.getRequestDispatcher("/bank-account/NegativeBalance.jsp");
+            rd.forward(request, response);
+            //外轉址 網址會變
+            //response.sendRedirect("bank-account/NegativeBalance.jsp");
+        }
+        else if(customer.getBalance()>10000){
+            request.setAttribute("customer", customer);
+            RequestDispatcher rd=request.getRequestDispatcher("/bank-account/HighBalance.jsp");
+            rd.forward(request, response);
+        }
+        else{
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
